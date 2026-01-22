@@ -353,6 +353,50 @@ json Server::handleGetVault(const json& request) {
     return response;
 }
 
+json Server::handleGetVaultWithSeedPhrase(const json& request) {
+    json response;
+    
+    try {
+        string username = request["username"];
+        string seedPhrase = request["seedPhrase"];
+        
+        // Загружаем таблицу пользователей
+        HashTableUsers users;
+        users.loadFromFile(usersFilePath);
+        
+        // Проверяем существование пользователя
+        if (!existUser(username, users)) {
+            response["status"] = "error";
+            response["message"] = "Пользователь не найден";
+            return response;
+        }
+        
+        // Аутентификация по seed phrase
+        if (!checkPhrase(username, users, seedPhrase)) {
+            response["status"] = "error";
+            response["message"] = "Неверная фраза восстановления";
+            return response;
+        }
+        
+        // Читаем зашифрованное хранилище
+        auto vaultData = readUserVault(username);
+        string vaultHex = toHex(vaultData);
+        
+        // Получаем vaultSalt для клиента
+        string vaultSalt = users.getVaultSalt(username);
+        
+        response["status"] = "success";
+        response["vaultData"] = vaultHex;
+        response["vaultSalt"] = vaultSalt;
+        
+    } catch (const exception& e) {
+        response["status"] = "error";
+        response["message"] = string("Ошибка получения данных: ") + e.what();
+    }
+    
+    return response;
+}
+
 json Server::handleUpdateVault(const json& request) {
     json response;
     
@@ -405,6 +449,8 @@ json Server::processRequest(const json& request) {
         return handleRecoverPassword(request);
     } else if (action == "getVault") {
         return handleGetVault(request);
+    } else if (action == "getVaultWithSeedPhrase") {
+        return handleGetVaultWithSeedPhrase(request);
     } else if (action == "updateVault") {
         return handleUpdateVault(request);
     } else {
