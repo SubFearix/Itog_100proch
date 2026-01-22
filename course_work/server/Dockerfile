@@ -23,8 +23,8 @@ RUN cmake .. && make
 
 # Создаем директорию для данных и копируем словари туда
 RUN mkdir -p /app/data && \
-    cp /app/build/english.txt /app/ && \
-    cp /app/build/rockyou_1000k.txt /app/
+    test -f /app/build/english.txt && cp /app/build/english.txt /app/ || { echo "Error: english.txt not found in build directory"; exit 1; } && \
+    test -f /app/build/rockyou_1000k.txt && cp /app/build/rockyou_1000k.txt /app/ || { echo "Error: rockyou_1000k.txt not found in build directory"; exit 1; }
 
 # Копируем entrypoint скрипт
 COPY docker-entrypoint.sh /usr/local/bin/
