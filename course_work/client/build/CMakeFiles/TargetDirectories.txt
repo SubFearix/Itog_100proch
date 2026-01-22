@@ -1,9 +1,0 @@
-/home/runner/work/Itog_100proch/Itog_100proch/course_work/client/build/CMakeFiles/password_client.dir
-/home/runner/work/Itog_100proch/Itog_100proch/course_work/client/build/CMakeFiles/package.dir
-/home/runner/work/Itog_100proch/Itog_100proch/course_work/client/build/CMakeFiles/package_source.dir
-/home/runner/work/Itog_100proch/Itog_100proch/course_work/client/build/CMakeFiles/edit_cache.dir
-/home/runner/work/Itog_100proch/Itog_100proch/course_work/client/build/CMakeFiles/rebuild_cache.dir
-/home/runner/work/Itog_100proch/Itog_100proch/course_work/client/build/CMakeFiles/list_install_components.dir
-/home/runner/work/Itog_100proch/Itog_100proch/course_work/client/build/CMakeFiles/install.dir
-/home/runner/work/Itog_100proch/Itog_100proch/course_work/client/build/CMakeFiles/install/local.dir
-/home/runner/work/Itog_100proch/Itog_100proch/course_work/client/build/CMakeFiles/install/strip.dir
