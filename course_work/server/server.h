@@ -25,6 +25,7 @@ private:
     nlohmann::json handleChangePassword(const nlohmann::json& request);
     nlohmann::json handleRecoverPassword(const nlohmann::json& request);
     nlohmann::json handleGetVault(const nlohmann::json& request);
+    nlohmann::json handleGetVaultWithSeedPhrase(const nlohmann::json& request);
     nlohmann::json handleUpdateVault(const nlohmann::json& request);
     
     // Обработка клиентских соединений
