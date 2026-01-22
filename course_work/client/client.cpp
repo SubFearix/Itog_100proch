@@ -314,8 +314,8 @@ bool Client::changePassword(const string& seedPhrase, const string& newPassword,
                     auto encryptedVault = hexToBytes(encryptedVaultHex);
                     decryptedJson = decrypt_aes_gcm(encryptedVault, oldVaultKey);
                 } catch (const exception& e) {
-                    // Создаем пустое хранилище вместо того, чтобы прерывать процесс
-                    decryptedJson = "[]";
+                    // Неверное кодовое слово - возвращаем ошибку вместо удаления данных
+                    return false;
                 }
             }
             
@@ -433,8 +433,8 @@ bool Client::recoverPassword(const string& user, const string& seedPhrase, const
                     auto encryptedVault = hexToBytes(encryptedVaultHex);
                     decryptedJson = decrypt_aes_gcm(encryptedVault, oldVaultKey);
                 } catch (const exception& e) {
-                    // Создаем пустое хранилище вместо того, чтобы прерывать процесс
-                    decryptedJson = "[]";
+                    // Неверное кодовое слово - возвращаем ошибку вместо удаления данных
+                    return false;
                 }
             }
             
