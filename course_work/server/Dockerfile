@@ -21,8 +21,14 @@ RUN mkdir -p build
 WORKDIR /app/build
 RUN cmake .. && make
 
-# Создаем директорию для данных
-RUN mkdir -p /app/data
+# Создаем директорию для данных и копируем словари туда
+RUN mkdir -p /app/data && \
+    cp /app/build/english.txt /app/ && \
+    cp /app/build/rockyou_1000k.txt /app/
+
+# Копируем entrypoint скрипт
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Возвращаемся в директорию с данными как рабочую директорию
 WORKDIR /app/data
@@ -30,5 +36,8 @@ WORKDIR /app/data
 # Открываем порт 8080
 EXPOSE 8080
 
-# Запускаем сервер (из директории /app/data, чтобы файлы создавались здесь)
+# Устанавливаем entrypoint
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+# Запускаем сервер
 CMD ["/app/build/password_server", "8080"]
