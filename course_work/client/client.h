@@ -26,6 +26,9 @@ private:
     void decryptAndLoadVault(const std::string& encryptedVaultHex);
     std::string encryptVault();
     
+    // Вспомогательная функция для валидации кодового слова путем попытки расшифровки хранилища
+    bool validateCodeWordWithVault(const std::string& codeWord, const std::string& vaultSaltHex, const std::string& encryptedVaultHex, std::string& decryptedJson);
+    
 public:
     Client(const std::string& host = "127.0.0.1", int port = 8080);
     ~Client();

@@ -357,8 +357,23 @@ json Server::handleGetVaultWithSeedPhrase(const json& request) {
     json response;
     
     try {
+        // Проверяем наличие обязательных полей
+        if (!request.contains("username") || !request.contains("seedPhrase")) {
+            response["status"] = "error";
+            response["message"] = "Отсутствуют обязательные поля";
+            return response;
+        }
+        
         string username = request["username"];
         string seedPhrase = request["seedPhrase"];
+        
+        // Валидация имени пользователя
+        string errorMessage;
+        if (!validateUsername(username, errorMessage)) {
+            response["status"] = "error";
+            response["message"] = errorMessage;
+            return response;
+        }
         
         // Загружаем таблицу пользователей
         HashTableUsers users;

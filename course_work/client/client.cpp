@@ -103,6 +103,26 @@ string Client::encryptVault() {
     return toHex(encryptedVault);
 }
 
+bool Client::validateCodeWordWithVault(const string& codeWord, const string& vaultSaltHex, const string& encryptedVaultHex, string& decryptedJson) {
+    // Проверяем, есть ли данные в хранилище
+    if (encryptedVaultHex.empty()) {
+        // Хранилище пустое
+        decryptedJson = "[]";
+        return true;
+    }
+    
+    try {
+        // Пытаемся расшифровать с предоставленным кодовым словом
+        auto vaultKey = deriveVaultKey(codeWord, vaultSaltHex);
+        auto encryptedVault = hexToBytes(encryptedVaultHex);
+        decryptedJson = decrypt_aes_gcm(encryptedVault, vaultKey);
+        return true;
+    } catch (const exception& e) {
+        // Неверное кодовое слово
+        return false;
+    }
+}
+
 bool Client::validateCodeWord(const string& codeWord, string& errorMessage) {
     // Проверка минимальной длины (не менее 3 символов)
     if (codeWord.length() < 3) {
@@ -302,21 +322,9 @@ bool Client::changePassword(const string& seedPhrase, const string& newPassword,
         string currentEncryptedVaultHex = getVaultResponse["vaultData"];
         
         string decryptedJson;
-        
-        // Проверяем, есть ли данные в хранилище
-        if (currentEncryptedVaultHex.empty()) {
-            // Хранилище пустое
-            decryptedJson = "[]";
-        } else {
-            try {
-                // Пытаемся расшифровать с предоставленным кодовым словом
-                auto currentVaultKey = deriveVaultKey(codeWord, currentVaultSaltHex);
-                auto currentEncryptedVault = hexToBytes(currentEncryptedVaultHex);
-                decryptedJson = decrypt_aes_gcm(currentEncryptedVault, currentVaultKey);
-            } catch (const exception& e) {
-                // Неверное кодовое слово - возвращаем ошибку ДО изменения пароля
-                return false;
-            }
+        if (!validateCodeWordWithVault(codeWord, currentVaultSaltHex, currentEncryptedVaultHex, decryptedJson)) {
+            // Неверное кодовое слово - возвращаем ошибку ДО изменения пароля
+            return false;
         }
         
         // Кодовое слово верное! Теперь можем менять пароль
@@ -427,21 +435,9 @@ bool Client::recoverPassword(const string& user, const string& seedPhrase, const
         string currentEncryptedVaultHex = getVaultResponse["vaultData"];
         
         string decryptedJson;
-        
-        // Проверяем, есть ли данные в хранилище
-        if (currentEncryptedVaultHex.empty()) {
-            // Хранилище пустое
-            decryptedJson = "[]";
-        } else {
-            try {
-                // Пытаемся расшифровать с предоставленным кодовым словом
-                auto currentVaultKey = deriveVaultKey(codeWord, currentVaultSaltHex);
-                auto currentEncryptedVault = hexToBytes(currentEncryptedVaultHex);
-                decryptedJson = decrypt_aes_gcm(currentEncryptedVault, currentVaultKey);
-            } catch (const exception& e) {
-                // Неверное кодовое слово - возвращаем ошибку ДО изменения пароля
-                return false;
-            }
+        if (!validateCodeWordWithVault(codeWord, currentVaultSaltHex, currentEncryptedVaultHex, decryptedJson)) {
+            // Неверное кодовое слово - возвращаем ошибку ДО изменения пароля
+            return false;
         }
         
         // Кодовое слово верное! Теперь можем восстанавливать пароль
